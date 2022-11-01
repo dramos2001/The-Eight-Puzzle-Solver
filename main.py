@@ -1,6 +1,6 @@
 import heapq
-
-from numpy import tile
+from copy import copy, deepcopy
+from numpy import empty, tile
 
 # pre-defined initial puzzle states for the user to choose from
 trivial = [[1, 2, 3],
@@ -28,9 +28,11 @@ solved = [[1, 2, 3],
           [4, 5, 6],
           [7, 8, 0]]
 
+row = [1, 0, -1, 0]
+column = [0, -1, 0, 1]
 
 class Node:
-    def __init__(self, parent_node, puzzle, misplaced_tiles, moves, empty_tile) -> None:
+    def __init__(self, parent_node, puzzle, misplaced_tiles, moves, empty_tile = [0,0]) -> None:
         self.parent_node = parent_node
         self.puzzle = puzzle
         self.misplaced_tiles = misplaced_tiles
@@ -46,10 +48,19 @@ class Node:
     def __lt__(self, other):
         return (self.misplaced_tiles < other.misplaced_tiles)
     
+    def setEmptyTilePosition(self):
+        for i in range(3):
+            for j in range(3):
+                if (self.puzzle[i][j] == 0):
+                    empty_tile = [i, j]
+                    return
+    
+    
 
 
 def uniformCostSearch(puzzle, heuristic):
-    root = Node(None, puzzle, 0, 0, emptyTilePosition(puzzle))
+    root = Node(None, puzzle, 0, 0)
+    root.setEmptyTilePosition()
     p_queue = []
     repeated_states = dict()
     heapq.heappush(p_queue, root)
@@ -73,11 +84,16 @@ def uniformCostSearch(puzzle, heuristic):
             return head_node
         
         for i in range(4):
-            new_tile_position = [head_node.empty_tile[0], 
-                                 head_node.empty_tile[1]]
-            child_node = createNewNode(head_node.puzzle, solved, head_node, head_node.moves+1,
-                                       head_node.empty_tile, new_tile_position)
-            heapq.heappush(p_queue, child_node)
+            x = head_node.empty_tile[0] + row[i]
+            y = head_node.empty_tile[1] + column[i]
+            new_tile_position = [x,y]
+            
+            if (new_tile_position[0] >= 0 and new_tile_position[0] < 3 and 
+                new_tile_position[1] >= 0 and new_tile_position[1] < 3):
+                child_node = createNewNode(head_node.puzzle, solved, head_node, 
+                                           head_node.moves+1, head_node.empty_tile, 
+                                           new_tile_position)
+                heapq.heappush(p_queue, child_node)
         
         puzzle_states_stack.append(head_node.puzzle)
             
@@ -85,7 +101,8 @@ def uniformCostSearch(puzzle, heuristic):
 # recreating the general search algorithm that was presented in the slides
 def generalSearch(initial, goal, queueing_function):
     g = calculateMisplacedTiles(initial, goal)
-    root = Node(None, initial, g, 0, emptyTilePosition(initial))
+    root = Node(None, initial, g, 0)
+    root.setEmptyTilePosition()
     heapq.heappush(queueing_function, root)
     
     while():
@@ -102,7 +119,7 @@ def generalSearch(initial, goal, queueing_function):
         
 
 def createNewNode(initial_state, goal_state, root_node, moves, empty_tile, new_empty_tile):
-    new_state = initial_state
+    new_state = deepcopy(initial_state)
     g = calculateMisplacedTiles(new_state, goal_state)
     
     tile_x = empty_tile[0]
@@ -112,7 +129,8 @@ def createNewNode(initial_state, goal_state, root_node, moves, empty_tile, new_e
     new_state[tile_x][tile_y] = new_state[tile_x_2][tile_y_2]
     new_state[tile_x_2][tile_y_2] = new_state[tile_x][tile_y]
     
-    new_node = Node(root_node, new_state, g, moves, emptyTilePosition(initial_state))
+    new_node = Node(root_node, new_state, g, moves)
+    new_node.setEmptyTilePosition()
     return new_node
             
 
@@ -141,6 +159,7 @@ def printPuzzle(puzzle):
         print(puzzle[i])
     print('\n')
     
+# main driver code for the program
 def driverCode():
     game_mode = input("Welcome to my 8-Puzzle Solver. Type 1 to use a default puzzle, or 2 to "
                       + "make your own.\n")
@@ -181,7 +200,7 @@ def driverCode():
             
         chooseAlgorithm(custom_puzzle)
     
-
+# ask the user which algorithm to use to solve the puzzle
 def chooseAlgorithm(puzzle):
     algorithm = input("Select an algorithm:\n1. Uniform Cost Search\n2. Misplaced Tile Heuristic"
                       + "\n3. Manhattan Distance Heuristic\n")
