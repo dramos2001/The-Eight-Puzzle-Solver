@@ -74,9 +74,32 @@ def moveDown(initial_node, empty_tile):
         temp_puzzle[empty_x+1][empty_y] = 0
         # set new empty tile position
         # calculate heuristics
+        
+        
+def moveLeft(initial_node, empty_tile):
+    if (empty_tile[1] is not 0):
+        temp_puzzle = deepcopy(initial_node.puzzle)
+        empty_x = empty_tile[0]
+        empty_y = empty_tile[1]
+        shifted = temp_puzzle[empty_x][empty_y-1]
+        temp_puzzle[empty_x][empty_y] = shifted
+        temp_puzzle[empty_x][empty_y-1] = 0
+        # set new empty tile position
+        # calculate heuristics
 
+
+def moveRight(initial_node, empty_tile):
+    if (empty_tile[1] is not 2):
+        temp_puzzle = deepcopy(initial_node.puzzle)
+        empty_x = empty_tile[0]
+        empty_y = empty_tile[1]
+        shifted = temp_puzzle[empty_x][empty_y+1]
+        temp_puzzle[empty_x][empty_y] = shifted
+        temp_puzzle[empty_x][empty_y+1] = 0
+        # set new empty tile position
+        # calculate heuristics
   
-def uniformCostSearch(puzzle, heuristic):
+def generalSearch(puzzle, heuristic):
     root = Node(puzzle)
     empty_tile_pos = setEmptyTilePosition(root.puzzle)
     p_queue = []
@@ -178,12 +201,12 @@ def chooseAlgorithm(puzzle):
                       + "\n3. Manhattan Distance Heuristic\n")
     if algorithm == "1":
         print("You chose: Uniform Cost Search")
-        uniformCostSearch(puzzle, 0)
+        generalSearch(puzzle, 0)
     elif algorithm == "2":
         print("You chose: Misplaced Tile Heuristic Search")
-        # misplacedTileSearch(puzzle)
+        generalSearch(puzzle, calculateMisplacedTiles(puzzle, solved))
     elif algorithm == "3":
         print("You chose: Manhattan Distance Heuristic Search")
-        # manhattanSearch(puzzle)
+        #generalSearch(puzzle)
 
 main()
