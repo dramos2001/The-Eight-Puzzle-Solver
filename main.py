@@ -23,6 +23,10 @@ hard = [[8, 7, 1],
         [6, 0, 2],
         [5, 4, 3]]
 
+impossible = [[0, 7, 2],
+              [4, 6, 1],
+              [3, 5, 8]]
+
 # the goal state of the 8 puzzle 
 solved = [[1, 2, 3],
           [4, 5, 6],
@@ -40,7 +44,7 @@ class Node:
         self.empty_tile = empty_tile
         
     def solved(self) -> bool:
-        return (self.puzzle == solved)
+        return (self.puzzle == solved and self.misplaced_tiles == 0)
         
     def boardToTuple(self) -> tuple:
         return tuple(map(tuple, self.puzzle))
@@ -56,10 +60,8 @@ class Node:
                     return
     
     
-
-
 def uniformCostSearch(puzzle, heuristic):
-    root = Node(None, puzzle, 0, 0)
+    root = Node(None, puzzle, heuristic, 0)
     root.setEmptyTilePosition()
     p_queue = []
     repeated_states = dict()
@@ -69,6 +71,7 @@ def uniformCostSearch(puzzle, heuristic):
     repeated_states[root.boardToTuple()] = "This is the parent board"
     
     puzzle_states_stack = []
+    puzzle_states_stack.append(puzzle)
     
     while (len(p_queue) > 0):
         max_queue_size = max(len(p_queue), max_queue_size)
@@ -126,20 +129,12 @@ def createNewNode(initial_state, goal_state, root_node, moves, empty_tile, new_e
     tile_y = empty_tile[1]
     tile_x_2 = new_empty_tile[0]
     tile_y_2 = new_empty_tile[1]
-    new_state[tile_x][tile_y] = new_state[tile_x_2][tile_y_2]
-    new_state[tile_x_2][tile_y_2] = new_state[tile_x][tile_y]
+    new_state[tile_x][tile_y], new_state[tile_x_2][tile_y_2] = new_state[tile_x_2][tile_y_2], new_state[tile_x][tile_y]
     
     new_node = Node(root_node, new_state, g, moves)
     new_node.setEmptyTilePosition()
     return new_node
-            
 
-# determine where the empty tile is in the puzzle
-def emptyTilePosition(puzzle):
-    for i in range(3):
-        for j in range(3):
-            if (puzzle[i][j] == 0):
-                return [i, j]
     
 # function to calcualte the total number of misplaced tiles in the puzzle
 # this number equates to g in the heuristic function   
@@ -158,6 +153,7 @@ def printPuzzle(puzzle):
     for i in range(3):
         print(puzzle[i])
     print('\n')
+    
     
 # main driver code for the program
 def driverCode():
@@ -184,6 +180,9 @@ def driverCode():
         elif difficulty == "4":
             print("Difficulty of 'hard' selected.")
             default_puzzle = hard
+        elif difficulty == "5":
+            print("Difficulty of 'impossible' selected.")
+            default_puzzle = impossible
             
         chooseAlgorithm(default_puzzle)
     elif (game_mode == "2"):
@@ -199,6 +198,7 @@ def driverCode():
             custom_puzzle.append(arr)
             
         chooseAlgorithm(custom_puzzle)
+    
     
 # ask the user which algorithm to use to solve the puzzle
 def chooseAlgorithm(puzzle):
