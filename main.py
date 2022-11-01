@@ -1,6 +1,5 @@
 import heapq
 from copy import copy, deepcopy
-from numpy import empty, tile
 
 # pre-defined initial puzzle states for the user to choose from
 trivial = [[1, 2, 3],
@@ -32,108 +31,81 @@ solved = [[1, 2, 3],
           [4, 5, 6],
           [7, 8, 0]]
 
-row = [1, 0, -1, 0]
-column = [0, -1, 0, 1]
 
 class Node:
-    def __init__(self, parent_node, puzzle, misplaced_tiles, moves, empty_tile = [0,0]) -> None:
-        self.parent_node = parent_node
+    def __init__(self, puzzle) -> None:
         self.puzzle = puzzle
-        self.misplaced_tiles = misplaced_tiles
-        self.moves = moves
-        self.empty_tile = empty_tile
+        self.misplaced_tiles = 0
+        self.moves = 0
         
     def solved(self) -> bool:
         return (self.puzzle == solved and self.misplaced_tiles == 0)
-        
-    def boardToTuple(self) -> tuple:
-        return tuple(map(tuple, self.puzzle))
     
     def __lt__(self, other):
         return (self.misplaced_tiles < other.misplaced_tiles)
     
-    def setEmptyTilePosition(self):
-        for i in range(3):
-            for j in range(3):
-                if (self.puzzle[i][j] == 0):
-                    empty_tile = [i, j]
-                    return
     
-    
+def setEmptyTilePosition(puzzle):
+    for i in range(3):
+        for j in range(3):
+            if (puzzle[i][j] == 0):
+                return [i, j]
+            
+            
+def moveUp(initial_node, empty_tile):
+    if (empty_tile[0] is not 0):
+        temp_puzzle = deepcopy(initial_node.puzzle)
+        empty_x = empty_tile[0]
+        empty_y = empty_tile[1]
+        shifted = temp_puzzle[empty_x-1][empty_y]
+        temp_puzzle[empty_x][empty_y] = shifted
+        temp_puzzle[empty_x-1][empty_y] = 0
+        # set new empty tile position
+        # calculate heuristic
+        
+
+def moveDown(initial_node, empty_tile):
+    if (empty_tile[0] is not 2):
+        temp_puzzle = deepcopy(initial_node.puzzle)
+        empty_x = empty_tile[0]
+        empty_y = empty_tile[1]
+        shifted = temp_puzzle[empty_x+1][empty_y]
+        temp_puzzle[empty_x][empty_y] = shifted
+        temp_puzzle[empty_x+1][empty_y] = 0
+        # set new empty tile position
+        # calculate heuristics
+
+  
 def uniformCostSearch(puzzle, heuristic):
-    root = Node(None, puzzle, heuristic, 0)
-    root.setEmptyTilePosition()
+    root = Node(puzzle)
+    empty_tile_pos = setEmptyTilePosition(root.puzzle)
     p_queue = []
-    repeated_states = dict()
     heapq.heappush(p_queue, root)
-    num_nodes_expanded = 0
-    max_queue_size = 0
-    repeated_states[root.boardToTuple()] = "This is the parent board"
+    num_expanded_nodes = 0
+    max_queue_len = 0
     
-    puzzle_states_stack = []
-    puzzle_states_stack.append(puzzle)
+    puzzle_states = []
+    puzzle_states.append(puzzle)
     
     while (len(p_queue) > 0):
-        max_queue_size = max(len(p_queue), max_queue_size)
+        max_queue_len = max(len(p_queue), max_queue_len)
         head_node = heapq.heappop(p_queue)
-        repeated_states[head_node.boardToTuple()] = "This can be anything"
         
         if (head_node.solved()):
-            while (len(puzzle_states_stack) > 0):
-                printPuzzle(puzzle_states_stack.pop())
+            while (len(puzzle_states) > 0):
+                printPuzzle(puzzle_states.pop())
             
-            print("Number of nodes expanded: ", num_nodes_expanded)
-            print("Max queue size: ", max_queue_size)
+            print("Number of nodes expanded: ", num_expanded_nodes)
+            print("Max queue size: ", max_queue_len)
             return head_node
-        
-        for i in range(4):
-            x = head_node.empty_tile[0] + row[i]
-            y = head_node.empty_tile[1] + column[i]
-            new_tile_position = [x,y]
-            
-            if (new_tile_position[0] >= 0 and new_tile_position[0] < 3 and 
-                new_tile_position[1] >= 0 and new_tile_position[1] < 3):
-                child_node = createNewNode(head_node.puzzle, solved, head_node, 
-                                           head_node.moves+1, head_node.empty_tile, 
-                                           new_tile_position)
-                heapq.heappush(p_queue, child_node)
-        
-        puzzle_states_stack.append(head_node.puzzle)
-            
-
-# recreating the general search algorithm that was presented in the slides
-def generalSearch(initial, goal, queueing_function):
-    g = calculateMisplacedTiles(initial, goal)
-    root = Node(None, initial, g, 0)
-    root.setEmptyTilePosition()
-    heapq.heappush(queueing_function, root)
-    
-    while():
-        # first we check if the queue is empty
-        if not queueing_function.heap:
-            return False
-        # if not true we pop off the head off nodes
-        node = heapq.heappop(queueing_function)
-        # determine if the head is the goal state
-        if (node.misplaced_tiles == 0):
-            return node
-        # if not create all of the head node's children and push it into the queue
-        #heapq.heappush(queueing_function, createNewNode(initial, goal, node, queueing_function.moves))
-        
-
-def createNewNode(initial_state, goal_state, root_node, moves, empty_tile, new_empty_tile):
-    new_state = deepcopy(initial_state)
-    g = calculateMisplacedTiles(new_state, goal_state)
-    
-    tile_x = empty_tile[0]
-    tile_y = empty_tile[1]
-    tile_x_2 = new_empty_tile[0]
-    tile_y_2 = new_empty_tile[1]
-    new_state[tile_x][tile_y], new_state[tile_x_2][tile_y_2] = new_state[tile_x_2][tile_y_2], new_state[tile_x][tile_y]
-    
-    new_node = Node(root_node, new_state, g, moves)
-    new_node.setEmptyTilePosition()
-    return new_node
+        else:
+            printPuzzle(head_node.puzzle)
+            print("Expanding")
+            num_expanded_nodes+=1
+            empty_tile_pos = setEmptyTilePosition(head_node.puzzle)
+            # compute movements here to create 
+            puzzle_states.append(head_node.puzzle)
+          
 
     
 # function to calcualte the total number of misplaced tiles in the puzzle
@@ -156,7 +128,7 @@ def printPuzzle(puzzle):
     
     
 # main driver code for the program
-def driverCode():
+def main():
     game_mode = input("Welcome to my 8-Puzzle Solver. Type 1 to use a default puzzle, or 2 to "
                       + "make your own.\n")
     if (game_mode == "1"):
@@ -214,5 +186,4 @@ def chooseAlgorithm(puzzle):
         print("You chose: Manhattan Distance Heuristic Search")
         # manhattanSearch(puzzle)
 
-driverCode()
-#generalSearch(very_easy, solved, p_queue)
+main()
