@@ -48,15 +48,29 @@ class Node:
         return (self.misplaced_tiles < other.misplaced_tiles)
     
 
-    
-    
+# function to determine where on the puzzle is the empty/zero space 
 def setEmptyTilePosition(puzzle):
     for i in range(3):
         for j in range(3):
             if (puzzle[i][j] == 0):
                 return [i, j]
             
+            
+# function to calcualte the total number of misplaced tiles in the puzzle
+# this number equates to g in the heuristic function and for use in A*
+# with the misplaced tiles heuristic    
+def calculateMisplacedTiles(puzzle, goal) -> int:
+    num = 0
+    for i in range(3):
+        for j in range(3):
+            if ((puzzle[i][j] != goal[i][j]) and (puzzle[i][j])):
+                num+=1
+                
+    return num
 
+
+# function to calculate the manhattan distance heuristic of an eight puzzle
+# used as a heuristic for A* search 
 def calculateManhattanHeuristic(puzzle):
     distance = 0
     solved_dict = {1: [0,0], 2: [0,1], 3: [0,2], 4: [1,0], 
@@ -70,8 +84,9 @@ def calculateManhattanHeuristic(puzzle):
                 distance += abs(i-coordinate[0]) + abs(j-coordinate[1])
                 
     return int(distance)
-            
-def moveUp(initial_node, empty_tile):
+  
+# function to create a new node where the empty space has been moved up one space            
+def moveUp(initial_node, empty_tile, heuristic, algorithm):
     if (empty_tile[0] is not 0):
         temp_puzzle = deepcopy(initial_node.puzzle)
         empty_x = empty_tile[0]
@@ -82,10 +97,17 @@ def moveUp(initial_node, empty_tile):
         # set new empty tile position
         # calculate heuristic
         new_node = Node(temp_puzzle)
+        new_node.moves+=1
+        if (algorithm == 1):
+            new_node.h = 0
+        elif (algorithm == 2):
+            new_node.h = calculateMisplacedTiles(new_node.puzzle, solved)
+        elif (algorithm == 3):
+            new_node.h = calculateManhattanHeuristic(new_node.puzzle)
         return new_node
         
-
-def moveDown(initial_node, empty_tile):
+# function to create a new node where the empty space has been moved down one space            
+def moveDown(initial_node, empty_tile, heuristic, algorithm):
     if (empty_tile[0] is not 2):
         temp_puzzle = deepcopy(initial_node.puzzle)
         empty_x = empty_tile[0]
@@ -96,10 +118,19 @@ def moveDown(initial_node, empty_tile):
         # set new empty tile position
         # calculate heuristics
         new_node = Node(temp_puzzle)
+        new_node.moves+=1
+        if (algorithm == 1):
+            new_node.h = 0
+        elif (algorithm == 2):
+            new_node.h = calculateMisplacedTiles(new_node.puzzle, solved)
+        elif (algorithm == 3):
+            new_node.h = calculateManhattanHeuristic(new_node.puzzle)
         return new_node
+  
         
-        
-def moveLeft(initial_node, empty_tile):
+# function to create a new node where the empty space has been
+# shifted to the left by one space
+def moveLeft(initial_node, empty_tile, heuristic, algorithm):
     if (empty_tile[1] is not 0):
         temp_puzzle = deepcopy(initial_node.puzzle)
         empty_x = empty_tile[0]
@@ -110,10 +141,18 @@ def moveLeft(initial_node, empty_tile):
         # set new empty tile position
         # calculate heuristics
         new_node = Node(temp_puzzle)
+        new_node.moves+=1
+        if (algorithm == 1):
+            new_node.h = 0
+        elif (algorithm == 2):
+            new_node.h = calculateMisplacedTiles(new_node.puzzle, solved)
+        elif (algorithm == 3):
+            new_node.h = calculateManhattanHeuristic(new_node.puzzle)
         return new_node
 
-
-def moveRight(initial_node, empty_tile):
+# function to create a new node where the empty space has been
+# shifted to the right by one space
+def moveRight(initial_node, empty_tile, heuristic, algorithm):
     if (empty_tile[1] is not 2):
         temp_puzzle = deepcopy(initial_node.puzzle)
         empty_x = empty_tile[0]
@@ -124,9 +163,16 @@ def moveRight(initial_node, empty_tile):
         # set new empty tile position
         # calculate heuristics
         new_node = Node(temp_puzzle)
+        new_node.moves+=1
+        if (algorithm == 1):
+            new_node.h = 0
+        elif (algorithm == 2):
+            new_node.h = calculateMisplacedTiles(new_node.puzzle, solved)
+        elif (algorithm == 3):
+            new_node.h = calculateManhattanHeuristic(new_node.puzzle)
         return new_node
   
-def generalSearch(puzzle, heuristic):
+def generalSearch(algorithm, puzzle, heuristic):
     root = Node(puzzle)
     empty_tile_pos = setEmptyTilePosition(root.puzzle)
     p_queue = []
@@ -135,7 +181,6 @@ def generalSearch(puzzle, heuristic):
     max_queue_len = 0
     
     puzzle_states = []
-    puzzle_states.append(puzzle)
     
     while (len(p_queue) > 0):
         max_queue_len = max(len(p_queue), max_queue_len)
@@ -153,33 +198,39 @@ def generalSearch(puzzle, heuristic):
             print("Expanding")
             num_expanded_nodes+=1
             empty_tile_pos = setEmptyTilePosition(head_node.puzzle)
-            # compute movements here to create 
+            # compute movements here to create new puzzle nodes
             new_nodes = []
-            new_nodes.append(moveDown(head_node, empty_tile_pos))
-            new_nodes.append(moveUp(head_node, empty_tile_pos))
-            new_nodes.append(moveRight(head_node, empty_tile_pos))
-            new_nodes.append(moveLeft(head_node, empty_tile_pos))
+            new_nodes.append(moveDown(head_node, empty_tile_pos, heuristic, algorithm))
+            new_nodes.append(moveUp(head_node, empty_tile_pos, heuristic, algorithm))
+            new_nodes.append(moveRight(head_node, empty_tile_pos, heuristic, algorithm))
+            new_nodes.append(moveLeft(head_node, empty_tile_pos, heuristic, algorithm))
             
-            for i in new_nodes:
-                if (i.puzzle not in puzzle_states):
-                    heapq.heappush(p_queue, i)
-                    max_queue_len = max(len(p_queue), max_queue_len)
+            # for i in new_nodes:
+            #     if (i.puzzle not in puzzle_states):
+            #         heapq.heappush(p_queue, i)
+            #         max_queue_len = max(len(p_queue), max_queue_len)
+              
+                            
+            temp_node = new_nodes[0]
+            if (temp_node is not None and temp_node.puzzle not in puzzle_states):
+                heapq.heappush(p_queue, temp_node)
+                max_queue_len = max(len(p_queue), max_queue_len)
+            temp_node_2 = new_nodes[1]
+            if (temp_node_2 is not None and temp_node_2.puzzle not in puzzle_states):
+                heapq.heappush(p_queue, temp_node_2)
+                max_queue_len = max(len(p_queue), max_queue_len)
+            temp_node_3 = new_nodes[2]
+            if (temp_node_3 is not None and temp_node_3.puzzle not in puzzle_states):
+                heapq.heappush(p_queue, temp_node_3)
+                max_queue_len = max(len(p_queue), max_queue_len)
+            temp_node_4 = new_nodes[3]
+            if (temp_node_4 is not None and temp_node_4.puzzle not in puzzle_states):
+                heapq.heappush(p_queue, temp_node_4)
+                max_queue_len = max(len(p_queue), max_queue_len) 
                     
             puzzle_states.append(head_node.puzzle)
           
 
-    
-# function to calcualte the total number of misplaced tiles in the puzzle
-# this number equates to g in the heuristic function   
-# to be used for manhattan and misplaced tile heuristics     
-def calculateMisplacedTiles(puzzle, goal) -> int:
-    num = 0
-    for i in range(3):
-        for j in range(3):
-            if ((puzzle[i][j] != goal[i][j]) and (puzzle[i][j])):
-                num+=1
-                
-    return num
             
 # print the n x n puzzle in its entirety            
 def printPuzzle(puzzle):
@@ -239,12 +290,12 @@ def chooseAlgorithm(puzzle):
                       + "\n3. Manhattan Distance Heuristic\n")
     if algorithm == "1":
         print("You chose: Uniform Cost Search")
-        generalSearch(puzzle, 0)
+        generalSearch(algorithm, puzzle, 0)
     elif algorithm == "2":
         print("You chose: Misplaced Tile Heuristic Search")
-        generalSearch(puzzle, calculateMisplacedTiles(puzzle, solved))
+        generalSearch(algorithm, puzzle, calculateMisplacedTiles(puzzle, solved))
     elif algorithm == "3":
         print("You chose: Manhattan Distance Heuristic Search")
-        generalSearch(puzzle, calculateManhattanHeuristic(puzzle))
+        generalSearch(algorithm, puzzle, calculateManhattanHeuristic(puzzle))
 
 main()
