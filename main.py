@@ -71,7 +71,7 @@ def calculateMisplacedTiles(puzzle, goal) -> int:
 
 # function to calculate the manhattan distance heuristic of an eight puzzle
 # used as a heuristic for A* search 
-def calculateManhattanHeuristic(puzzle):
+def calculateManhattanHeuristic(puzzle) -> int:
     distance = 0
     solved_dict = {1: [0,0], 2: [0,1], 3: [0,2], 4: [1,0], 
                    5: [1,1], 6: [1,2], 7: [2,0], 8: [2,1]}
@@ -87,7 +87,7 @@ def calculateManhattanHeuristic(puzzle):
   
 # function to create a new node where the empty space has been moved up one space            
 def moveUp(initial_node, empty_tile, heuristic, algorithm):
-    if (empty_tile[0] is not 0):
+    if (empty_tile[0] != 0):
         temp_puzzle = deepcopy(initial_node.puzzle)
         empty_x = empty_tile[0]
         empty_y = empty_tile[1]
@@ -108,7 +108,7 @@ def moveUp(initial_node, empty_tile, heuristic, algorithm):
         
 # function to create a new node where the empty space has been moved down one space            
 def moveDown(initial_node, empty_tile, heuristic, algorithm):
-    if (empty_tile[0] is not 2):
+    if (empty_tile[0] != 2):
         temp_puzzle = deepcopy(initial_node.puzzle)
         empty_x = empty_tile[0]
         empty_y = empty_tile[1]
@@ -131,7 +131,7 @@ def moveDown(initial_node, empty_tile, heuristic, algorithm):
 # function to create a new node where the empty space has been
 # shifted to the left by one space
 def moveLeft(initial_node, empty_tile, heuristic, algorithm):
-    if (empty_tile[1] is not 0):
+    if (empty_tile[1] != 0):
         temp_puzzle = deepcopy(initial_node.puzzle)
         empty_x = empty_tile[0]
         empty_y = empty_tile[1]
@@ -153,7 +153,7 @@ def moveLeft(initial_node, empty_tile, heuristic, algorithm):
 # function to create a new node where the empty space has been
 # shifted to the right by one space
 def moveRight(initial_node, empty_tile, heuristic, algorithm):
-    if (empty_tile[1] is not 2):
+    if (empty_tile[1] != 2):
         temp_puzzle = deepcopy(initial_node.puzzle)
         empty_x = empty_tile[0]
         empty_y = empty_tile[1]
@@ -194,8 +194,8 @@ def generalSearch(algorithm, puzzle, heuristic):
             print("Max queue size: ", max_queue_len)
             return head_node
         if (head_node.puzzle not in puzzle_states):
+            print("The best state to expand with a g_n = ", head_node.g, "and h_n = ", head_node.h, "is...")
             printPuzzle(head_node.puzzle)
-            print("Expanding")
             num_expanded_nodes+=1
             empty_tile_pos = setEmptyTilePosition(head_node.puzzle)
             # compute movements here to create new puzzle nodes
@@ -229,8 +229,10 @@ def generalSearch(algorithm, puzzle, heuristic):
                 max_queue_len = max(len(p_queue), max_queue_len) 
                     
             puzzle_states.append(head_node.puzzle)
-          
-
+    
+    print("No solution found")     
+    print("Number of nodes expanded: ", num_expanded_nodes)
+    print("Max queue size: ", max_queue_len)
             
 # print the n x n puzzle in its entirety            
 def printPuzzle(puzzle):
