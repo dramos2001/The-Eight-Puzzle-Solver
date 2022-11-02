@@ -37,12 +37,17 @@ class Node:
         self.puzzle = puzzle
         self.misplaced_tiles = 0
         self.moves = 0
+        self.f = 0
+        self.g = 0
+        self.h = 0
         
     def solved(self) -> bool:
         return (self.puzzle == solved and self.misplaced_tiles == 0)
     
     def __lt__(self, other):
         return (self.misplaced_tiles < other.misplaced_tiles)
+    
+
     
     
 def setEmptyTilePosition(puzzle):
@@ -51,6 +56,20 @@ def setEmptyTilePosition(puzzle):
             if (puzzle[i][j] == 0):
                 return [i, j]
             
+
+def calculateManhattanHeuristic(puzzle):
+    distance = 0
+    solved_dict = {1: [0,0], 2: [0,1], 3: [0,2], 4: [1,0], 
+                   5: [1,1], 6: [1,2], 7: [2,0], 8: [2,1]}
+    
+    for i in range(3):
+        for j in range(3):
+            if (puzzle[i][j] != 0 and puzzle[i][j] != solved[i][j]):
+                coordinate = []
+                coordinate = solved_dict[puzzle[i][j]]
+                distance += abs(i-coordinate[0]) + abs(j-coordinate[1])
+                
+    return int(distance)
             
 def moveUp(initial_node, empty_tile):
     if (empty_tile[0] is not 0):
@@ -62,6 +81,8 @@ def moveUp(initial_node, empty_tile):
         temp_puzzle[empty_x-1][empty_y] = 0
         # set new empty tile position
         # calculate heuristic
+        new_node = Node(temp_puzzle)
+        return new_node
         
 
 def moveDown(initial_node, empty_tile):
@@ -74,6 +95,8 @@ def moveDown(initial_node, empty_tile):
         temp_puzzle[empty_x+1][empty_y] = 0
         # set new empty tile position
         # calculate heuristics
+        new_node = Node(temp_puzzle)
+        return new_node
         
         
 def moveLeft(initial_node, empty_tile):
@@ -86,6 +109,8 @@ def moveLeft(initial_node, empty_tile):
         temp_puzzle[empty_x][empty_y-1] = 0
         # set new empty tile position
         # calculate heuristics
+        new_node = Node(temp_puzzle)
+        return new_node
 
 
 def moveRight(initial_node, empty_tile):
@@ -98,6 +123,8 @@ def moveRight(initial_node, empty_tile):
         temp_puzzle[empty_x][empty_y+1] = 0
         # set new empty tile position
         # calculate heuristics
+        new_node = Node(temp_puzzle)
+        return new_node
   
 def generalSearch(puzzle, heuristic):
     root = Node(puzzle)
@@ -121,12 +148,23 @@ def generalSearch(puzzle, heuristic):
             print("Number of nodes expanded: ", num_expanded_nodes)
             print("Max queue size: ", max_queue_len)
             return head_node
-        else:
+        if (head_node.puzzle not in puzzle_states):
             printPuzzle(head_node.puzzle)
             print("Expanding")
             num_expanded_nodes+=1
             empty_tile_pos = setEmptyTilePosition(head_node.puzzle)
             # compute movements here to create 
+            new_nodes = []
+            new_nodes.append(moveDown(head_node, empty_tile_pos))
+            new_nodes.append(moveUp(head_node, empty_tile_pos))
+            new_nodes.append(moveRight(head_node, empty_tile_pos))
+            new_nodes.append(moveLeft(head_node, empty_tile_pos))
+            
+            for i in new_nodes:
+                if (i.puzzle not in puzzle_states):
+                    heapq.heappush(p_queue, i)
+                    max_queue_len = max(len(p_queue), max_queue_len)
+                    
             puzzle_states.append(head_node.puzzle)
           
 
@@ -207,6 +245,6 @@ def chooseAlgorithm(puzzle):
         generalSearch(puzzle, calculateMisplacedTiles(puzzle, solved))
     elif algorithm == "3":
         print("You chose: Manhattan Distance Heuristic Search")
-        #generalSearch(puzzle)
+        generalSearch(puzzle, calculateManhattanHeuristic(puzzle))
 
 main()
