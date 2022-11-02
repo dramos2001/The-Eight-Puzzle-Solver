@@ -40,12 +40,21 @@ class Node:
         self.f = 0
         self.g = 0
         self.h = 0
+    
+    def setHeuristicH(self, h):
+        self.h = h
+        
+    def setMoves(self, moves):
+        self.moves = moves
         
     def solved(self) -> bool:
         return (self.puzzle == solved and self.misplaced_tiles == 0)
     
     def __lt__(self, other):
-        return (self.misplaced_tiles < other.misplaced_tiles)
+        return (self.f < other.f)
+    
+    def setHeuristicF(self):
+        self.f = self.g + self.h
     
 
 # function to determine where on the puzzle is the empty/zero space 
@@ -97,13 +106,13 @@ def moveUp(initial_node, empty_tile, heuristic, algorithm):
         # set new empty tile position
         # calculate heuristic
         new_node = Node(temp_puzzle)
-        new_node.moves+=1
+        new_node.setMoves(new_node.moves+1)
         if (algorithm == 1):
-            new_node.h = 0
+            new_node.setHeuristicH(0)
         elif (algorithm == 2):
-            new_node.h = calculateMisplacedTiles(new_node.puzzle, solved)
+            new_node.setHeuristicH(calculateMisplacedTiles(new_node.puzzle, solved))
         elif (algorithm == 3):
-            new_node.h = calculateManhattanHeuristic(new_node.puzzle)
+            new_node.setHeuristicH(calculateManhattanHeuristic(new_node.puzzle))
         return new_node
         
 # function to create a new node where the empty space has been moved down one space            
@@ -118,13 +127,13 @@ def moveDown(initial_node, empty_tile, heuristic, algorithm):
         # set new empty tile position
         # calculate heuristics
         new_node = Node(temp_puzzle)
-        new_node.moves+=1
+        new_node.setMoves(new_node.moves+1)
         if (algorithm == 1):
-            new_node.h = 0
+            new_node.setHeuristicH(0)
         elif (algorithm == 2):
-            new_node.h = calculateMisplacedTiles(new_node.puzzle, solved)
+            new_node.setHeuristicH(calculateMisplacedTiles(new_node.puzzle, solved))
         elif (algorithm == 3):
-            new_node.h = calculateManhattanHeuristic(new_node.puzzle)
+            new_node.setHeuristicH(calculateManhattanHeuristic(new_node.puzzle))
         return new_node
   
         
@@ -141,13 +150,13 @@ def moveLeft(initial_node, empty_tile, heuristic, algorithm):
         # set new empty tile position
         # calculate heuristics
         new_node = Node(temp_puzzle)
-        new_node.moves+=1
+        new_node.setMoves(new_node.moves+1)
         if (algorithm == 1):
-            new_node.h = 0
+            new_node.setHeuristicH(0)
         elif (algorithm == 2):
-            new_node.h = calculateMisplacedTiles(new_node.puzzle, solved)
+            new_node.setHeuristicH(calculateMisplacedTiles(new_node.puzzle, solved))
         elif (algorithm == 3):
-            new_node.h = calculateManhattanHeuristic(new_node.puzzle)
+            new_node.setHeuristicH(calculateManhattanHeuristic(new_node.puzzle))
         return new_node
 
 # function to create a new node where the empty space has been
@@ -163,13 +172,13 @@ def moveRight(initial_node, empty_tile, heuristic, algorithm):
         # set new empty tile position
         # calculate heuristics
         new_node = Node(temp_puzzle)
-        new_node.moves+=1
+        new_node.setMoves(new_node.moves+1)
         if (algorithm == 1):
-            new_node.h = 0
+            new_node.setHeuristicH(0)
         elif (algorithm == 2):
-            new_node.h = calculateMisplacedTiles(new_node.puzzle, solved)
+            new_node.setHeuristicH(calculateMisplacedTiles(new_node.puzzle, solved))
         elif (algorithm == 3):
-            new_node.h = calculateManhattanHeuristic(new_node.puzzle)
+            new_node.setHeuristicH(calculateManhattanHeuristic(new_node.puzzle))
         return new_node
   
 def generalSearch(algorithm, puzzle, heuristic):
