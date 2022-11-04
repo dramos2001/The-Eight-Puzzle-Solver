@@ -96,21 +96,23 @@ def calculateManhattanHeuristic(puzzle) -> int:
 # function to create a new node where the empty space has been moved up one space            
 def moveUp(initial_node, empty_tile, algorithm):
     if (empty_tile[0] != 0):
+        # shift empty tile up one space
         temp_puzzle = deepcopy(initial_node.puzzle)
         empty_x = empty_tile[0]
         empty_y = empty_tile[1]
         shifted = temp_puzzle[empty_x-1][empty_y]
         temp_puzzle[empty_x][empty_y] = shifted
         temp_puzzle[empty_x-1][empty_y] = 0
+        
         # calculate heuristic
         new_node = Node(temp_puzzle)
-        new_node.setMoves(new_node.moves+1)
-        if (algorithm == 1):
+        new_node.setMoves(initial_node.moves+1)
+        if (algorithm == "1"):
             new_node.setHeuristicH(0)
-        elif (algorithm == 2):
+        elif (algorithm == "2"):
             h = calculateMisplacedTiles(new_node.puzzle)
             new_node.setHeuristicH(h)
-        elif (algorithm == 3):
+        elif (algorithm == "3"):
             h = calculateManhattanHeuristic(new_node.puzzle)
             new_node.setHeuristicH(h)
             
@@ -119,21 +121,23 @@ def moveUp(initial_node, empty_tile, algorithm):
 # function to create a new node where the empty space has been moved down one space            
 def moveDown(initial_node, empty_tile, algorithm):
     if (empty_tile[0] != puzzle_size-1):
+        # shift empty tile down one space
         temp_puzzle = deepcopy(initial_node.puzzle)
         empty_x = empty_tile[0]
         empty_y = empty_tile[1]
         shifted = temp_puzzle[empty_x+1][empty_y]
         temp_puzzle[empty_x][empty_y] = shifted
         temp_puzzle[empty_x+1][empty_y] = 0
+        
         # calculate heuristics
         new_node = Node(temp_puzzle)
-        new_node.setMoves(new_node.moves+1)
-        if (algorithm == 1):
+        new_node.setMoves(initial_node.moves+1)
+        if (algorithm == "1"):
             new_node.setHeuristicH(0)
-        elif (algorithm == 2):
+        elif (algorithm == "2"):
             h = calculateMisplacedTiles(new_node.puzzle)
             new_node.setHeuristicH(h)
-        elif (algorithm == 3):
+        elif (algorithm == "3"):
             h = calculateManhattanHeuristic(new_node.puzzle)
             new_node.setHeuristicH(h)
             
@@ -144,21 +148,23 @@ def moveDown(initial_node, empty_tile, algorithm):
 # shifted to the left by one space
 def moveLeft(initial_node, empty_tile, algorithm):
     if (empty_tile[1] != 0):
+        # shift empty tile to the left one space
         temp_puzzle = deepcopy(initial_node.puzzle)
         empty_x = empty_tile[0]
         empty_y = empty_tile[1]
         shifted = temp_puzzle[empty_x][empty_y-1]
         temp_puzzle[empty_x][empty_y] = shifted
         temp_puzzle[empty_x][empty_y-1] = 0
+        
         # calculate heuristics
         new_node = Node(temp_puzzle)
-        new_node.setMoves(new_node.moves+1)
-        if (algorithm == 1):
+        new_node.setMoves(initial_node.moves+1)
+        if (algorithm == "1"):
             new_node.setHeuristicH(0)
-        elif (algorithm == 2):
+        elif (algorithm == "2"):
             h = calculateMisplacedTiles(new_node.puzzle)
             new_node.setHeuristicH(h)
-        elif (algorithm == 3):
+        elif (algorithm == "3"):
             h = calculateManhattanHeuristic(new_node.puzzle)
             new_node.setHeuristicH(h)
             
@@ -168,21 +174,23 @@ def moveLeft(initial_node, empty_tile, algorithm):
 # shifted to the right by one space
 def moveRight(initial_node, empty_tile, algorithm):
     if (empty_tile[1] != puzzle_size - 1):
+        # shift empty tile to the right one space
         temp_puzzle = deepcopy(initial_node.puzzle)
         empty_x = empty_tile[0]
         empty_y = empty_tile[1]
         shifted = temp_puzzle[empty_x][empty_y+1]
         temp_puzzle[empty_x][empty_y] = shifted
         temp_puzzle[empty_x][empty_y+1] = 0
+        
         # calculate heuristics
         new_node = Node(temp_puzzle)
-        new_node.setMoves(new_node.moves+1)
-        if (algorithm == 1):
+        new_node.setMoves(initial_node.moves+1)
+        if (algorithm == "1"):
             new_node.setHeuristicH(0)
-        elif (algorithm == 2):
+        elif (algorithm == "2"):
             h = calculateMisplacedTiles(new_node.puzzle)
             new_node.setHeuristicH(h)
-        elif (algorithm == 3):
+        elif (algorithm == "3"):
             h = calculateManhattanHeuristic(new_node.puzzle)
             new_node.setHeuristicH(h)
             
@@ -196,6 +204,7 @@ def generalSearch(algorithm, puzzle, heuristic):
     empty_tile_pos = setEmptyTilePosition(root.puzzle)
     p_queue = []
     heapq.heappush(p_queue, root)
+    heapq.heapify(p_queue)
     num_expanded_nodes = 1
     max_queue_len = 1
     
@@ -206,8 +215,6 @@ def generalSearch(algorithm, puzzle, heuristic):
         head_node = heapq.heappop(p_queue)
         
         if (head_node.solved()):
-            # while (len(puzzle_states) > 0):
-            #     printPuzzle(puzzle_states.pop())
             
             print("Number of nodes expanded: ", num_expanded_nodes)
             print("Max queue size: ", max_queue_len)
@@ -238,10 +245,7 @@ def generalSearch(algorithm, puzzle, heuristic):
             puzzle_states.append(head_node.puzzle)
             new_nodes.clear()
     
-    print("No solution found")     
-    print("Number of nodes expanded: ", num_expanded_nodes)
-    print("Max queue size: ", max_queue_len)
-    print("Time for algorithm to finish:", time.time() - start_time)
+    print("No solution found")
             
 # print the n x n puzzle in its entirety            
 def printPuzzle(puzzle):
