@@ -1,5 +1,4 @@
 import heapq
-import time
 from copy import copy, deepcopy
 
 # pre-defined initial puzzle states for the user to choose from
@@ -198,9 +197,6 @@ def moveRight(initial_node, empty_tile, algorithm):
 # allows for use of Uniform Cost search and A* with either the 
 # misplaced tile heuristic or the manhattan distance heuristic
 def generalSearch(algorithm, puzzle, heuristic):
-    # for determining the runtime of the search algorithms
-    start_time = time.time()
-    
     # creating a priority queue and initializing it with the initial puzzle
     root = Node(puzzle)
     root.setHeuristicH(heuristic)
@@ -229,7 +225,6 @@ def generalSearch(algorithm, puzzle, heuristic):
             print("Number of nodes expanded: ", num_expanded_nodes)
             print("Max queue size: ", max_queue_len)
             print("Answer found at depth: ", head_node.moves)
-            print("Time for algorithm to finish:", time.time() - start_time, "seconds")     
             return
         # if the node is not one of the already checked puzzle states, we can analyze it and create new states from it
         if (head_node.puzzle not in puzzle_states):
@@ -269,8 +264,7 @@ def printPuzzle(puzzle):
 # main driver code for the program
 def main():
     # get user input to determine if they want to create a custom puzzle or use a default one
-    game_mode = input("Welcome to my 8-Puzzle Solver. Type 1 to use a default puzzle, or 2 to "
-                      + "make your own.\n")
+    game_mode = input("Welcome to my 8-Puzzle Solver. Type 1 to use a default puzzle, or 2 to " + "make your own.\n")
     
     # user chooses a default puzzle; have the user choose one based on puzzle difficulty
     if (game_mode == "1"):
@@ -338,4 +332,5 @@ def chooseAlgorithm(puzzle):
         h = calculateManhattanHeuristic(puzzle)
         generalSearch(algorithm, puzzle, h)
 
-main()
+if __name__ == "__main__":
+    main()
