@@ -1,35 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Eight Puzzle Solver</title>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"/>
-        <!--<script src="index.js"><script/>-->
-    </head>
-    <body>
-        <div class="container mt-5">
-            <h1>Eight Puzzle Solver</h1>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Eight Puzzle Solver</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"/>
+	</head>
+	<body>
+		<div class="container my-3">
+			<div class="text-center">
+				<h1 class="display-3">Eight Puzzle Solver</h1>
+				<h3><small class="text-muted">By: Damian Ramos</small></h3>
+			</div>
 
-            <form method="post">
-                <table class="table table-bordered">
-                    {% for row in values %}
-                        <tr>
-                            {% for value in row %}
-                                <td><input type="text" class="form-control" name="box_{{loop.index0}}_{{loop.index}}" value="{{value}}" pattern="\d*"></td>
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
-                </table>
-                <button type="submit" class="btn btn-primary">Solve</button>
-                <button type="submit" class="btn btn-danger" name="reset">Reset</button>
-            </form>
-        </div> 
+			<form method="post">
+				<table class="table">
+					{% for row in values %}
+						<tr class="col">
+							{% for value in row %}
+								<td><input type="text" class="form-control" name="box_{{loop.index0}}_{{loop.index}}" value="{{value}}" pattern="\d*"></td>
+							{% endfor %}
+						</tr>
+					{% endfor %}
+				</table>
 
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        
+				<div class="container my-3">
+					<div class="form-check">
+						<input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" checked>
+						<label class="form-check-label" for="flexRadioDefault1">Uniform Cost Search</label>
+					</div>
+					<div class="form-check">
+						<input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2">
+						<label class="form-check-label" for="flexRadioDefault2">Misplaced Tile Heuristic</label>
+					</div>
+					<div class="form-check">
+						<input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3">
+						<label class="form-check-label" for="flexRadioDefault3">Manhattan Distance Heuristic</label>
+					</div>
+				</div>
 
-    </body>
+				<div class="container ms-1">
+					<button type="submit" class="btn btn-primary btn-lg" name="submit">Solve</button>
+				</div>
+				<div class="container mt-2 ms-2">
+					<button type="submit" class="btn btn-secondary btn-sm" name="reset">Reset</button>
+				</div>
+			</form>
+		</div>
+	
+
+		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+			
+
+	</body>
 </html>
