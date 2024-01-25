@@ -299,7 +299,7 @@ def main():
         custom_puzzle = []
         
         print("Enter the numbers for the puzzle one by one. Hit enter after inputting each number" +
-              "Nine valid numbers should be entered, including 0 for the blank space.\n")
+              "\nNine valid numbers should be entered, including 0 for the blank space.\n")
         
         # checks for input of numbers for the puzzle
         for i in range(puzzle_size):
