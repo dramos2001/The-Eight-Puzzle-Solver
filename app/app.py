@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+import subprocess
 
 app = Flask(__name__)
 
@@ -11,38 +12,42 @@ initial_values = [
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    # print(request.method)
+    # print(request.form)
+    selected_algo = 'uniformCostSearch'  # default value
+    
     if request.method == 'POST':
-        if 'reset' in request.form:
-            # reset button clicked, set all values to 0
-            for i in range(3):
-                for j in range(3):
-                    initial_values[i][j] = 0
-        else:
+        #print(request.form)
+        if 'submit' in request.form:
+            # update algorithm based on user input
+            selected_algo = request.form.get('flexRadioDefault', 'uniformCostSearch')
             # update values based on user input
             for i in range(3):
                 for j in range(3):
                     key = f'box_{i}_{j}'
                     try:
                         # try to convert input to integer
-                        value = int(request.form[key])
+                        value = int(request.form.get(key, 0))
                         initial_values[i][j] = value
                     except ValueError:
-                        # if not a valid int, keep current value
+                        # if not valid int, keep current value
+                        print("INVALID INPUT")
                         pass
+                    
+            # run another python file
+            # subprocess.run(['python', 'main.py'])
+        elif 'reset' in request.form:
+            # reset button clicked, set all values to 0
+            for i in range(3):
+                for j in range(3):
+                    initial_values[i][j] = 0
                 
-    return render_template('index.html', values=initial_values)
+    # for testing purposes
+    print(initial_values)
+    print(selected_algo)
+    
+    return render_template('index.html', values=initial_values, selected_algo=selected_algo)
 
-# @app.route('/update_cell', methods=['POST'])
-# def update_cell():
-#     data = request.get_json()
-#     row = data['row']
-#     col = data['col']
-#     number = data['number']
-    
-#     # update grid with entered number
-#     initial_grid[row][col] = number
-    
-#     return jsonify(success=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
