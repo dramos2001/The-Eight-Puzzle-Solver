@@ -13,12 +13,12 @@
 				<h3><small class="text-muted">By: Damian Ramos</small></h3>
 			</div>
 
-			<form method="post">
+			<form method="post" action="/">
 				<table class="table">
-					{% for row in values %}
+					{% for i in range(values|length) %}
 						<tr class="col">
-							{% for value in row %}
-								<td><input type="text" class="form-control" name="box_{{loop.index0}}_{{loop.index}}" value="{{value}}" pattern="\d*"></td>
+							{% for j in range(values[i]|length) %}
+								<td><input type="text" class="form-control" name="box_{{ i }}_{{ j }}" value="{{ values[i][j] }}" pattern="\d*"></td>
 							{% endfor %}
 						</tr>
 					{% endfor %}
@@ -26,16 +26,16 @@
 
 				<div class="container my-3">
 					<div class="form-check">
-						<input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" checked>
-						<label class="form-check-label" for="flexRadioDefault1">Uniform Cost Search</label>
+						<input class="form-check-input" type="radio" name="flexRadioDefault" id="uniformCostSearch" value="uniformCostSearch" {% if selected_algo == 'uniformCostSearch' %} checked {% endif %}>
+						<label class="form-check-label" for="uniformCostSearch">Uniform Cost Search</label>
 					</div>
 					<div class="form-check">
-						<input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2">
-						<label class="form-check-label" for="flexRadioDefault2">Misplaced Tile Heuristic</label>
+						<input class="form-check-input" type="radio" name="flexRadioDefault" id="misplacedTileHeuristic" value="misplacedTileHeuristic" {% if selected_algo == 'misplacedTileHeuristic' %} checked {% endif %}>
+						<label class="form-check-label" for="misplacedTileHeuristic">Misplaced Tile Heuristic</label>
 					</div>
 					<div class="form-check">
-						<input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3">
-						<label class="form-check-label" for="flexRadioDefault3">Manhattan Distance Heuristic</label>
+						<input class="form-check-input" type="radio" name="flexRadioDefault" id="manhattanDistanceHeuristic" value="manhattanDistanceHeuristic" {% if selected_algo == 'manhattanDistanceHeuristic' %} checked {% endif %}>
+						<label class="form-check-label" for="manhattanDistanceHeuristic">Manhattan Distance Heuristic</label>
 					</div>
 				</div>
 
