@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
-import subprocess
+#import subprocess
+import solver
 
 app = Flask(__name__)
 
@@ -36,6 +37,7 @@ def index():
                     
             # run another python file
             # subprocess.run(['python', 'main.py'])
+            solver.main(selected_algo, initial_values)
         elif 'reset' in request.form:
             # reset button clicked, set all values to 0
             for i in range(3):
@@ -48,6 +50,13 @@ def index():
     
     return render_template('index.html', values=initial_values, selected_algo=selected_algo)
 
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/how_it_works')
+def hiw():
+    return render_template('hiw.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
